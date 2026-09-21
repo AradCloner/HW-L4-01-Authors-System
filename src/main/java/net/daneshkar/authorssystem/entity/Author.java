@@ -28,18 +28,7 @@ public class Author {
 
 
 
-    public Author(String firstName, String lastName, String username, String password) throws InvalidUserNameException, WeakPasswordException {
-
-        if (username.length() < 5) {
-            throw new InvalidUserNameException("نام کاربری باید حداقل 5 کاراکتر باشد!");
-        }
-
-        // Validation password
-        if (password.length() < 8) {
-            throw new WeakPasswordException("رمز عبور باید حداقل 8 کاراکتر باشد!");
-        }
-
-
+    public Author(String firstName, String lastName, String username, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;

@@ -1,10 +1,10 @@
 package net.daneshkar.authorssystem.dto;
 
 
-import exception.InvalidUserNameException;
-import exception.WeakPasswordException;
 import lombok.Getter;
 import lombok.Setter;
+import net.daneshkar.authorssystem.exception.InvalidUserNameException;
+import net.daneshkar.authorssystem.exception.WeakPasswordException;
 
 import java.util.HashSet;
 import java.util.Objects;

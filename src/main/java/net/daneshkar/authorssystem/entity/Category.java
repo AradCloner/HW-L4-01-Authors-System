@@ -1,26 +1,21 @@
-package net.daneshkar.authorssystem.dto;
+package net.daneshkar.authorssystem.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.Objects;
 
-@Getter
+@Entity
+@Table(name = "categories")
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class Category {
-    private static long nextId = 1L;
 
-    private final Long id;
-    @Setter
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String title;
-
-    public  Category() {
-        this.id = nextId++;
-
-    }
-    public  Category(String title) {
-        this.id = nextId++;
-        this.title = title;
-    }
 
     @Override
     public int hashCode() {

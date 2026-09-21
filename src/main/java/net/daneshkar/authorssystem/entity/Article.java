@@ -1,27 +1,40 @@
-package net.daneshkar.authorssystem.dto;
+package net.daneshkar.authorssystem.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.Objects;
 
-@Getter
-@Setter
+@Entity
+@Table(name = "articles")
+@Data
 public class Article {
-    private static long nextId = 1L;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
     private String content;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "author_id", nullable = false)
+    private Author author;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ArticleStatus status;
 
+
     public Article() {
-        this.id = nextId++;
         this.status = ArticleStatus.DRAFT;
     }
+
+
     public Article(String title, String content, Category category, ArticleStatus status) {
-        this.id = nextId++;
         this.title = title;
         this.content = content;
         this.category = category;

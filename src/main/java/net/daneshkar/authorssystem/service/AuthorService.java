@@ -1,13 +1,13 @@
 package net.daneshkar.authorssystem.service;
 
-import net.daneshkar.authorssystem.dto.ArticleStatus;
+import net.daneshkar.authorssystem.entity.ArticleStatus;
 import net.daneshkar.authorssystem.exception.ArticleNotFoundException;
 import net.daneshkar.authorssystem.exception.AuthorNotFoundException;
 import net.daneshkar.authorssystem.exception.DuplicateArticleException;
 import net.daneshkar.authorssystem.exception.InvalidUserNameException;
 import net.daneshkar.authorssystem.exception.WeakPasswordException;
-import net.daneshkar.authorssystem.dto.Author;
-import net.daneshkar.authorssystem.dto.Article;
+import net.daneshkar.authorssystem.entity.Author;
+import net.daneshkar.authorssystem.entity.Article;
 
 import java.util.HashMap;
 import java.util.Map;

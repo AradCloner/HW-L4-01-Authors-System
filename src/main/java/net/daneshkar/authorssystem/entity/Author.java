@@ -1,32 +1,32 @@
-package net.daneshkar.authorssystem.dto;
+package net.daneshkar.authorssystem.entity;
 
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import net.daneshkar.authorssystem.exception.InvalidUserNameException;
 import net.daneshkar.authorssystem.exception.WeakPasswordException;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
-
-@Getter
-@Setter
+@Entity
+@Table(name = "authors")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Author {
-    private static long nextId = 1L;
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String firstName;
     private String lastName;
     private String username;
     private String password;
-    private Set<Article> articles;
+    @OneToMany(mappedBy = "author")
+    private List<Article> articles = new ArrayList<>();
 
-    public Author() {
-        this.id = nextId++;
-        this.articles = new HashSet<>();
-    }
+
 
     public Author(String firstName, String lastName, String username, String password) throws InvalidUserNameException, WeakPasswordException {
 
@@ -39,12 +39,11 @@ public class Author {
             throw new WeakPasswordException("رمز عبور باید حداقل 8 کاراکتر باشد!");
         }
 
-        this.id = nextId++;
+
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
         this.password = password;
-        this.articles = new HashSet<>();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package net.daneshkar.authorssystem.dto;
+package net.daneshkar.authorssystem.entity;
 
 public enum ArticleStatus {
     DRAFT,

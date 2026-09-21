@@ -33,7 +33,7 @@ CREATE TABLE articles
 
     status      VARCHAR(30)  NOT NULL,
     CONSTRAINT chk_articles_status
-        CHECK (status IN ('DRAFT', 'PUBLISHED', 'ARCHIVED')),
+        CHECK (status IN ('DRAFT', 'PUBLISHED', 'REVIEWING', 'REJECTED')),
 
     CONSTRAINT pk_articles PRIMARY KEY (id),
 

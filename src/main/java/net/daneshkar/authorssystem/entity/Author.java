@@ -3,8 +3,6 @@ package net.daneshkar.authorssystem.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import net.daneshkar.authorssystem.exception.InvalidUserNameException;
-import net.daneshkar.authorssystem.exception.WeakPasswordException;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,11 +2,8 @@ package net.daneshkar.authorssystem.service;
 
 import lombok.RequiredArgsConstructor;
 import net.daneshkar.authorssystem.entity.ArticleStatus;
-import net.daneshkar.authorssystem.exception.ArticleNotFoundException;
-import net.daneshkar.authorssystem.exception.AuthorNotFoundException;
-import net.daneshkar.authorssystem.exception.DuplicateArticleException;
-import net.daneshkar.authorssystem.exception.InvalidUserNameException;
-import net.daneshkar.authorssystem.exception.WeakPasswordException;
+import net.daneshkar.authorssystem.entity.Category;
+import net.daneshkar.authorssystem.exception.*;
 import net.daneshkar.authorssystem.entity.Author;
 import net.daneshkar.authorssystem.entity.Article;
 import net.daneshkar.authorssystem.repository.ArticleRepository;
@@ -14,10 +11,8 @@ import net.daneshkar.authorssystem.repository.AuthorRepository;
 import net.daneshkar.authorssystem.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,9 +23,13 @@ public class AuthorService {
     private final ArticleRepository articleRepository;
 
 
-
     public void registerAuthor(String firstName, String lastName, String username, String password)
             throws InvalidUserNameException, WeakPasswordException {
+
+        if (authorRepository.findByUsername(username).isPresent()) {
+            throw new InvalidUserNameException("نام کاربری تکراری است!");
+        }
+
         if (username.length() < 5) {
             throw new InvalidUserNameException("نام کاربری باید حداقل 5 کاراکتر باشد!");
         }
@@ -44,63 +43,94 @@ public class AuthorService {
         authorRepository.save(author);
     }
 
-    public Article addArticle(Long authorId, Article article) throws ArticleNotFoundException, AuthorNotFoundException, DuplicateArticleException {
+    public void addArticle(Long authorId, Long categoryId, Article article)
+            throws AuthorNotFoundException, DuplicateArticleException, CategoryNotFoundException {
+
         if (article == null) {
             throw new IllegalArgumentException("مقاله نمی‌تواند خالی باشد!");
         }
-        Author author = authorRepository.findById(authorId).orElseThrow(() -> new AuthorNotFoundException("نویسنده پیدا نشد!"));
 
-        boolean isArticleTitleDuplicate = author.getArticles().stream().anyMatch(a -> a.getTitle().equals(article.getTitle()));
-        if (articleRepository.existsByAuthorIdAndTitle(authorId,article.getTitle())) {
+        Author author = authorRepository.findById(authorId)
+                .orElseThrow(() -> new AuthorNotFoundException("نویسنده پیدا نشد!"));
+
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("دسته‌بندی پیدا نشد!"));
+
+        if (articleRepository.existsByAuthorIdAndTitle(authorId, article.getTitle())) {
             throw new DuplicateArticleException("این عنوان مقاله قبلاً ثبت شده است!");
         }
-        author.getArticles().add(article);
-        return article;
+
+        article.setAuthor(author);
+        article.setCategory(category);
+
+        articleRepository.save(article);
     }
 
-    public void deleteArticle(Long authorId, Long articleId) throws ArticleNotFoundException, AuthorNotFoundException {
-        Author author = authors.get(authorId);
-        if (author == null) {
-            throw new AuthorNotFoundException("نویسنده پیدا نشد!");
-        }
-        Article article = author.getArticles().stream().filter(a -> a.getId().equals(articleId)).findFirst().orElse(null);
-        if (article == null) {
-            throw new ArticleNotFoundException("مقاله پیدا نشد!");
-        }
-        author.getArticles().remove(article);
+
+
+    public void deleteArticle(Long authorId, Long articleId)
+            throws ArticleNotFoundException, AuthorNotFoundException {
+
+        authorRepository.findById(authorId)
+                .orElseThrow(() -> new AuthorNotFoundException("نویسنده پیدا نشد!"));
+
+        Article article = articleRepository.findByIdAndAuthorId(articleId, authorId)
+                .orElseThrow(() -> new ArticleNotFoundException("مقاله پیدا نشد!"));
+
+        articleRepository.delete(article);
     }
 
-    public Article changeArticleStatus(Long authorId, Long articleId, ArticleStatus newStatus)
+
+    public void changeArticleStatus(Long authorId, Long articleId, ArticleStatus newStatus)
             throws AuthorNotFoundException, ArticleNotFoundException {
-        Author author = authors.get(authorId);
-        if (author == null) {
-            throw new AuthorNotFoundException("نویسنده پیدا نشد!");
-        }
-        Article article = author.getArticles().stream().filter(a -> a.getId().equals(articleId)).findFirst().orElse(null);
-        if (article == null) {
-            throw new ArticleNotFoundException("مقاله پیدا نشد!");
-        }
+
+        authorRepository.findById(authorId)
+                .orElseThrow(() -> new AuthorNotFoundException("نویسنده پیدا نشد!"));
+
+        Article article = articleRepository.findByIdAndAuthorId(articleId, authorId)
+                .orElseThrow(() -> new ArticleNotFoundException("مقاله پیدا نشد!"));
+
         article.setStatus(newStatus);
-        return article;
+        articleRepository.save(article);
     }
+
+
     public Article searchArticle(Long authorId, Long articleId)
             throws AuthorNotFoundException, ArticleNotFoundException {
-        Author author = authors.get(authorId);
-        if (author == null) {
-            throw new AuthorNotFoundException("نویسنده پیدا نشد!");
-        }
-        Article article = author.getArticles().stream().filter(a -> a.getId().equals(articleId)).findFirst().orElse(null);
-        if (article == null) {
-            throw new ArticleNotFoundException("مقاله پیدا نشد!");
-        }
-        return article;
+
+        authorRepository.findById(authorId)
+                .orElseThrow(() -> new AuthorNotFoundException("نویسنده پیدا نشد!"));
+
+        return articleRepository.findByIdAndAuthorId(articleId, authorId)
+                .orElseThrow(() -> new ArticleNotFoundException("مقاله پیدا نشد!"));
     }
-    public Set<Article> showPublishedArticles(Long authorId)
+
+    public List<Article> showPublishedArticles(Long authorId)
             throws AuthorNotFoundException {
-        Author author = authors.get(authorId);
-        if (author == null) {
-            throw new AuthorNotFoundException("نویسنده پیدا نشد!");
-        }
-        return author.getArticles().stream().filter(a -> a.getStatus() == ArticleStatus.PUBLISHED).collect(Collectors.toSet());
+
+        authorRepository.findById(authorId)
+                .orElseThrow(() -> new AuthorNotFoundException("نویسنده پیدا نشد!"));
+
+        return articleRepository.findByAuthorIdAndStatus(
+                authorId,
+                ArticleStatus.PUBLISHED
+        );
     }
+
+    public Category addCategory(String title) {
+        if (categoryRepository.findByTitle(title).isPresent()) {
+            throw new IllegalArgumentException("دسته‌بندی تکراری است!");
+        }
+
+        Category category = new Category();
+        category.setTitle(title);
+
+        return categoryRepository.save(category);
+    }
+
+
+    public List<Category> showCategories() {
+        return categoryRepository.findAll();
+    }
+
 }

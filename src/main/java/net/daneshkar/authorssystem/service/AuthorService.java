@@ -23,23 +23,22 @@ public class AuthorService {
     private final ArticleRepository articleRepository;
 
 
-    public void registerAuthor(String firstName, String lastName, String username, String password)
+    public void registerAuthor(Author author)
             throws InvalidUserNameException, WeakPasswordException {
 
-        if (authorRepository.findByUsername(username).isPresent()) {
+        if (authorRepository.findByUsername(author.getUsername()).isPresent()) {
             throw new InvalidUserNameException("نام کاربری تکراری است!");
         }
 
-        if (username.length() < 5) {
+        if (author.getUsername().length() < 5) {
             throw new InvalidUserNameException("نام کاربری باید حداقل 5 کاراکتر باشد!");
         }
 
         // Validation password
-        if (password.length() < 8) {
+        if (author.getPassword().length() < 8) {
             throw new WeakPasswordException("رمز عبور باید حداقل 8 کاراکتر باشد!");
         }
 
-        Author author = new Author(firstName, lastName, username, password);
         authorRepository.save(author);
     }
 

@@ -13,4 +13,10 @@ public class ChangeArticleStatusRequestDto {
 
     @NotNull(message = "Article status is required")
     private ArticleStatus status;
+
+    @NotNull(message = "Article id is required")
+    private Long articleId;
+
+    @NotNull(message = "Author id is required")
+    private Long authorId;
 }

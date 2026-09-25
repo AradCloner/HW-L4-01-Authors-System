@@ -29,7 +29,6 @@ public class Mapper {
 
     public static ArticleResponseDto mapToArticleResponse(Article article) {
         return ArticleResponseDto.builder()
-                .id(article.getId())
                 .title(article.getTitle())
                 .content(article.getContent())
                 .status(article.getStatus())

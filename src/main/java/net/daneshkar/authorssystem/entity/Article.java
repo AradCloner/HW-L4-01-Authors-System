@@ -9,6 +9,8 @@ import java.util.Objects;
 @Table(name = "articles")
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Article {
 
     @Id
@@ -27,12 +29,8 @@ public class Article {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ArticleStatus status;
-
-
-    public Article() {
-        this.status = ArticleStatus.DRAFT;
-    }
+    @Builder.Default
+    private ArticleStatus status = ArticleStatus.DRAFT;
 
 
     public Article(String title, String content, Category category, ArticleStatus status) {
